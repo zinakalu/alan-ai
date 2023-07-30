@@ -7,6 +7,10 @@ const alanKey =
 function App() {
   const [location, setLocation] = useState(null);
   const [news, setNews] = useState([]);
+  const [yelpBusiness, setYelpBusiness] = useState([]);
+  const [generalQuestions, setGeneralQuestions] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [song, setSong] = useState("https://www.youtube.com");
   const alanInstance = useRef(null);
 
   useEffect(() => {
@@ -26,6 +30,22 @@ function App() {
 
       case "getNews":
         handleGetNews(commandData.source);
+        break;
+
+      case "getYelpBusiness":
+        handleGetYelpBusiness(commandData.searchType, commandData.location);
+        break;
+
+      case "getGeneralQuestions":
+        handleGetGeneralQuestions(commandData.question);
+        break;
+
+      case "getWeather":
+        handleWeather(commandData.city);
+        break;
+
+      case "playSong":
+        setSong(commandData.song);
         break;
 
       default:
@@ -59,6 +79,59 @@ function App() {
       });
   }
 
+  function handleGetYelpBusiness(searchType, location) {
+    fetch(
+      `http://localhost:5555/search-business?search_type=${searchType}&location=${location}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setYelpBusiness(data.businesses);
+
+        alanInstance.current.playText({
+          command: `${data}`,
+        });
+      });
+  }
+
+  function handleGetGeneralQuestions(question) {
+    fetch(`http://localhost:5555/ask-gpt3?question=${question}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setGeneralQuestions(data.response);
+
+        alanInstance.current.playText({
+          command: `${data}`,
+        });
+      });
+  }
+
+  function handleWeather(city) {
+    console.log(`Are you being invoked?`);
+    fetch(`http://localhost:5555/get-weather?city=${city}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setWeather(data.weather_info);
+        console.log(data.weather_info);
+
+        alanInstance.current.playText({
+          command: `${data.weather_info}`,
+        });
+      });
+  }
+
+  const Business = ({ name }) => {
+    return <h3>{name}</h3>;
+  };
+
+  const BusinessList = () => {
+    return yelpBusiness.map((business) => {
+      return <Business name={business.name} />;
+    });
+  };
+
   const Article = ({ article }) => {
     return <h1>{article.title}</h1>;
   };
@@ -68,41 +141,59 @@ function App() {
       return <Article article={article} />;
     });
 
-  useEffect(() => {
-    alanInstance.current = alanBtn({
-      key: alanKey,
-      onCommand: (commandData) => {
-        console.log("Before api call");
-        if (commandData.command === "getLocation") {
-          console.log("Received getLocation command");
-          fetch("http://localhost:5555/get-location")
-            .then((res) => res.json())
-            .then(({ current_location }) => {
-              // "New York, United States"
-              console.log(current_location);
+  // useEffect(() => {
+  //   alanInstance.current = alanBtn({
+  //     key: alanKey,
+  //     onCommand: (commandData) => {
+  //       console.log("Before api call");
+  //       if (commandData.command === "getLocation") {
+  //         console.log("Received getLocation command");
+  //         fetch("http://localhost:5555/get-location")
+  //           .then((res) => res.json())
+  //           .then(({ current_location }) => {
+  //             // "New York, United States"
+  //             console.log(current_location);
 
-              // Render "current_location" to Component
-              setLocation(current_location);
+  //             // Render "current_location" to Component
+  //             setLocation(current_location);
 
-              alanInstance.current.playText({
-                command: `Your current location is ${current_location}`,
-              });
-            });
-          console.log("after api call");
-        }
-      },
-    });
-  }, []);
+  //             alanInstance.current.playText({
+  //               command: `Your current location is ${current_location}`,
+  //             });
+  //           });
+  //         console.log("after api call");
+  //       }
+  //     },
+  //   });
+  // }, []);
 
   return (
     <div>
-      <h1>Alan AI News Application</h1>
+      <h1>AI Application</h1>
       <p>Your current location: {location}</p>
-      {/* {news && ( */}
       <p>
         Your news: <ArticlesList />
       </p>
-      {/* )} */}
+
+      <p>
+        Your Business Search: <BusinessList />
+      </p>
+
+      <p>Weather Information: {weather}</p>
+
+      <p>
+        To play the song, click{" "}
+        <a
+          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
+            song
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          here
+        </a>
+        .
+      </p>
     </div>
   );
 }
