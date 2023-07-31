@@ -10,7 +10,7 @@ function App() {
   const [yelpBusiness, setYelpBusiness] = useState([]);
   const [generalQuestions, setGeneralQuestions] = useState(null);
   const [weather, setWeather] = useState(null);
-  const [song, setSong] = useState("https://www.youtube.com");
+  const [song, setSong] = useState("");
   const alanInstance = useRef(null);
 
   useEffect(() => {
@@ -45,8 +45,11 @@ function App() {
         break;
 
       case "playSong":
-        setSong(commandData.song);
+        handleSong(commandData.song);
         break;
+      // case "playSong":
+      //   setSong(commandData.song);
+      //   break;
 
       default:
         console.log("Default");
@@ -118,6 +121,19 @@ function App() {
 
         alanInstance.current.playText({
           command: `${data.weather_info}`,
+        });
+      });
+  }
+
+  function handleSong(song) {
+    fetch(`http://localhost:5555/songs?q=${song}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setSong(data.video_id);
+        console.log(data.video_id);
+        alanInstance.current.playText({
+          command: `${data.video_id}`,
         });
       });
   }
