@@ -61,9 +61,9 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         setLocation(data.location);
-        alanInstance.current.playText({
-          command: `Your current location is ${data.current_location}`,
-        });
+        alanInstance.current.playText(
+          `Your current location is ${data.current_location}`
+        );
       });
   }
 
@@ -90,9 +90,11 @@ function App() {
       .then((data) => {
         console.log(data);
         setYelpBusiness(data.businesses);
-
-        alanInstance.current.playText({
-          command: `${data}`,
+        console.log(data.businesses);
+        alanInstance.current.playText(`The restaurants are`);
+        data.businesses.forEach((biz) => {
+          console.log(biz.name);
+          alanInstance.current.playText(biz.name);
         });
       });
   }
@@ -119,22 +121,30 @@ function App() {
         setWeather(data.weather_info);
         console.log(data.weather_info);
 
-        alanInstance.current.playText({
-          command: `${data.weather_info}`,
-        });
+        alanInstance.current.playText(
+          `finding the weather for you. ${data.weather_info}`
+        );
+        // alanInstance.current.playText({
+        //   command: `${data.weather_info}`,
+        // });
       });
   }
 
   function handleSong(song) {
-    fetch(`http://localhost:5555/songs?q=${song}`)
+    fetch(`http://localhost:5555/song?q=${song}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(song),
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setSong(data.video_id);
         console.log(data.video_id);
-        alanInstance.current.playText({
-          command: `${data.video_id}`,
-        });
+        // alanInstance.current.playText({
+        //   command: `${data.video_id}`,
+        // });
       });
   }
 
