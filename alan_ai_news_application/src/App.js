@@ -165,6 +165,7 @@ function App() {
   }
 
   function handleSong(song) {
+    console.log("I heard this song: ", song);
     fetch(`http://localhost:5555/song?q=${song}`, {
       method: "POST",
       headers: {
@@ -176,6 +177,7 @@ function App() {
       .then((data) => {
         setSong(data.video_id);
         console.log(data.video_id);
+        window.open(`https://youtube.com/watch?v=${data.video_id}`, "_blank");
         // alanInstance.current.playText({
         //   command: `${data.video_id}`,
         // });
@@ -184,7 +186,7 @@ function App() {
 
   return (
     <div className={`App ${theme}`}>
-      <button onClick={toggleTheme}>Toggle Theme</button>
+      <button onClick={toggleTheme}>Hello User!</button>
       <div className="avatar">
         <img src={alanTuring} alt="Alan Turinng" />
       </div>
