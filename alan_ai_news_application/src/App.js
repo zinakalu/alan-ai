@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import alanBtn from "@alan-ai/alan-sdk-web";
+import alanTuring from "./imageFolder/alan-turing-rapp-art.jpg";
+import "./index.css";
 
 const alanKey =
   "2c0ab51777316753ef8cf83bde8e67772e956eca572e1d8b807a3e2338fdd0dc/stage";
 
 function App() {
+  const [theme, setTheme] = useState("theme1");
   const [location, setLocation] = useState(null);
   const [news, setNews] = useState([]);
   const [yelpBusiness, setYelpBusiness] = useState([]);
@@ -12,6 +15,10 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [song, setSong] = useState("");
   const alanInstance = useRef(null);
+
+  const toggleTheme = () => {
+    setTheme(theme === "theme1" ? "theme2" : "theme1");
+  };
 
   useEffect(() => {
     alanInstance.current = alanBtn({
@@ -29,7 +36,7 @@ function App() {
         break;
 
       case "getNews":
-        handleGetNews(commandData.source);
+        handleGetNews(commandData.query, commandData.source);
         break;
 
       case "getYelpBusiness":
@@ -47,13 +54,37 @@ function App() {
       case "playSong":
         handleSong(commandData.song);
         break;
-      // case "playSong":
-      //   setSong(commandData.song);
-      //   break;
+
+      case "openTab":
+        handleOpenTab(commandData.url);
+        break;
 
       default:
         console.log("Default");
     }
+  }
+
+  function handleOpenTab(url) {
+    console.log("Received URL: ", url);
+    // Sanitize the raw URL here if needed, e.g., remove any suspicious characters
+
+    // If the user only said the name of the website without ".com", add it
+    if (!url.includes(".")) {
+      const TLDs = [".com", ".org", ".net", ".edu", ".gov"];
+      for (const TLD of TLDs) {
+        url = url + TLD;
+        break;
+      }
+    }
+
+    // If the user didn't include "http://" or "https://", add it
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "http://" + url;
+    }
+
+    console.log("Processed URL: ", url);
+
+    window.open(url, "_blank");
   }
 
   function handleGetLocation() {
@@ -67,18 +98,21 @@ function App() {
       });
   }
 
-  function handleGetNews(source) {
-    fetch(`http://localhost:5555/get-news?source=${source}`)
+  //work on getting other news sources to work
+  function handleGetNews(query, source) {
+    fetch(`http://localhost:5555/get-news?q=${query}&sources=${source}`)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-
-        // Render "news" to Component
         setNews(data.articles);
 
-        alanInstance.current.playText({
-          command: `${data.news_data}`,
+        alanInstance.current.playText(`Okay, these are the news headlines`);
+        data.articles.forEach((article) => {
+          console.log(article.name);
+          alanInstance.current.playText(article.title);
         });
+
+        console.log(data.news_data);
       });
   }
 
@@ -148,82 +182,16 @@ function App() {
       });
   }
 
-  const Business = ({ name }) => {
-    return <h3>{name}</h3>;
-  };
-
-  const BusinessList = () => {
-    return yelpBusiness.map((business) => {
-      return <Business name={business.name} />;
-    });
-  };
-
-  const Article = ({ article }) => {
-    return <h1>{article.title}</h1>;
-  };
-
-  const ArticlesList = () =>
-    news.map((article) => {
-      return <Article article={article} />;
-    });
-
-  // useEffect(() => {
-  //   alanInstance.current = alanBtn({
-  //     key: alanKey,
-  //     onCommand: (commandData) => {
-  //       console.log("Before api call");
-  //       if (commandData.command === "getLocation") {
-  //         console.log("Received getLocation command");
-  //         fetch("http://localhost:5555/get-location")
-  //           .then((res) => res.json())
-  //           .then(({ current_location }) => {
-  //             // "New York, United States"
-  //             console.log(current_location);
-
-  //             // Render "current_location" to Component
-  //             setLocation(current_location);
-
-  //             alanInstance.current.playText({
-  //               command: `Your current location is ${current_location}`,
-  //             });
-  //           });
-  //         console.log("after api call");
-  //       }
-  //     },
-  //   });
-  // }, []);
-
   return (
-    <div>
-      <h1>AI Application</h1>
-      <p>Your current location: {location}</p>
-      <p>
-        Your news: <ArticlesList />
-      </p>
-
-      <p>
-        Your Business Search: <BusinessList />
-      </p>
-
-      <p>Weather Information: {weather}</p>
-
-      <p>
-        To play the song, click{" "}
-        <a
-          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
-            song
-          )}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          here
-        </a>
-        .
-      </p>
+    <div className={`App ${theme}`}>
+      <button onClick={toggleTheme}>Toggle Theme</button>
+      <div className="avatar">
+        <img src={alanTuring} alt="Alan Turinng" />
+      </div>
+      <div className="content">{/* <h1>Floating CSS animation</h1> */}</div>
+      <div className="star"></div>
     </div>
   );
 }
 
 export default App;
-
-//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
