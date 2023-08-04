@@ -15,6 +15,7 @@ function App() {
   const [generalQuestions, setGeneralQuestions] = useState(null);
   const [weather, setWeather] = useState(null);
   const [song, setSong] = useState("");
+  const [country, setCountry] = useState([]);
   const alanInstance = useRef(null);
 
   const toggleTheme = () => {
@@ -29,7 +30,7 @@ function App() {
   }, []);
 
   function handleCommand(commandData) {
-    console.log(commandData);
+    console.log("commandData", commandData);
 
     switch (commandData.command) {
       case "getLocation":
@@ -162,7 +163,7 @@ function App() {
     ];
     hours = numberWords[hours];
     minutes = numberWords[minutes];
-
+    console.log(hours);
     return `${hours} ${minutes} ${period}`;
   }
 
@@ -200,15 +201,41 @@ function App() {
     fetch(`http://localhost:5555/get-news?sources=${sources}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        console.log("🤷🏾‍♀️🤷🏾‍♀️", data);
         setNews(data.articles);
         console.log(data.articles);
-
-        alanInstance.current.playText(`Okay, these are the news headlines`);
-        data.articles.forEach((article) => {
-          console.log(article.name);
-          alanInstance.current.playText(article.title);
-        });
+        if (Array.isArray(data.articles)) {
+          alanInstance.current.playText(`Okay, these are the news headlines`);
+          data.articles.forEach((article) => {
+            console.log(article.name);
+            alanInstance.current.playText(article.title);
+          });
+        } else {
+          const infoType = data.query.split(" ")[0];
+          console.log("🧐", infoType);
+          let responseText;
+          switch (infoType) {
+            case "currency":
+              responseText = `The currency of ${
+                data.result.name
+              } is ${data.result.currencies.join(",")}`;
+              break;
+            case "language":
+              responseText = `The language of ${
+                data.result.name
+              } is ${data.result.languages.join(",")}`;
+              break;
+            case "population":
+              responseText = `The population of ${data.result.name} is ${data.result.population}`;
+              break;
+            case "capital":
+              responseText = `The capital of ${data.result.name} is ${data.result.capital}`;
+              break;
+            default:
+              responseText = `I'm sorry, I don't have the information you're asking for.`;
+          }
+          alanInstance.current.playText(responseText);
+        }
 
         console.log(data.news_data);
       });
@@ -286,7 +313,7 @@ function App() {
     <div className={`App ${theme}`}>
       <button onClick={toggleTheme}>Hello User!</button>
       <div className="avatar">
-        <img src={alanTuring} alt="Alan Turinng" />
+        <img src={alanTuring} alt="Alan Turing" />
       </div>
       <div className="content">{/* <h1>Floating CSS animation</h1> */}</div>
       <div id="stars"></div>
