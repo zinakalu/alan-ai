@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import alanBtn from "@alan-ai/alan-sdk-web";
 import alanTuring from "./imageFolder/alan-turing-rapp-art.jpg";
 import "./index.css";
+import "./index.scss";
 
 const alanKey =
   "2c0ab51777316753ef8cf83bde8e67772e956eca572e1d8b807a3e2338fdd0dc/stage";
 
 function App() {
-  const [theme, setTheme] = useState("theme1");
+  const [theme, setTheme] = useState("theme2");
   const [location, setLocation] = useState(null);
   const [news, setNews] = useState([]);
   const [yelpBusiness, setYelpBusiness] = useState([]);
@@ -36,7 +37,7 @@ function App() {
         break;
 
       case "getNews":
-        handleGetNews(commandData.query, commandData.source);
+        handleGetNews(commandData.sources);
         break;
 
       case "getYelpBusiness":
@@ -59,16 +60,114 @@ function App() {
         handleOpenTab(commandData.url);
         break;
 
+      case "getTime":
+        handleTime(commandData.time);
+        break;
+
       default:
         console.log("Default");
     }
   }
 
+  function handleTime() {
+    const now = new Date();
+
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+
+    const formattedTime = formatTime(`${hours}:${minutes}`);
+    alanInstance.current.playText(`The time is ${formattedTime}`);
+  }
+
+  function formatTime(time) {
+    let [hours, minutes] = time.split(":");
+
+    hours = parseInt(hours);
+    minutes = parseInt(minutes);
+
+    let period = "AM";
+    if (hours >= 12) {
+      period = "PM";
+    }
+
+    if (hours > 12) {
+      hours -= 12;
+    } else if (hours === 0) {
+      hours = 12;
+    }
+    hours = hours < 10 ? `O${hours}` : hours;
+    minutes = minutes < 10 ? `O${minutes}` : minutes;
+
+    const numberWords = [
+      "zero",
+      "one",
+      "two",
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+      "ten",
+      "eleven",
+      "twelve",
+      "thirteen",
+      "fourteen",
+      "fifteen",
+      "sixteen",
+      "seventeen",
+      "eighteen",
+      "nineteen",
+      "twenty",
+      "twenty-one",
+      "twenty-two",
+      "twenty-three",
+      "twenty-four",
+      "twenty-five",
+      "twenty-six",
+      "twenty-seven",
+      "twenty-eight",
+      "twenty-nine",
+      "thirty",
+      "thirty-one",
+      "thirty-two",
+      "thirty-three",
+      "thirty-four",
+      "thirty-five",
+      "thirty-six",
+      "thirty-seven",
+      "thirty-eight",
+      "thirty-nine",
+      "forty",
+      "forty-one",
+      "forty-two",
+      "forty-three",
+      "forty-four",
+      "forty-five",
+      "forty-six",
+      "forty-seven",
+      "forty-eight",
+      "forty-nine",
+      "fifty",
+      "fifty-one",
+      "fifty-two",
+      "fifty-three",
+      "fifty-four",
+      "fifty-five",
+      "fifty-six",
+      "fifty-seven",
+      "fifty-eight",
+      "fifty-nine",
+    ];
+    hours = numberWords[hours];
+    minutes = numberWords[minutes];
+
+    return `${hours} ${minutes} ${period}`;
+  }
+
   function handleOpenTab(url) {
     console.log("Received URL: ", url);
-    // Sanitize the raw URL here if needed, e.g., remove any suspicious characters
-
-    // If the user only said the name of the website without ".com", add it
     if (!url.includes(".")) {
       const TLDs = [".com", ".org", ".net", ".edu", ".gov"];
       for (const TLD of TLDs) {
@@ -77,7 +176,6 @@ function App() {
       }
     }
 
-    // If the user didn't include "http://" or "https://", add it
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       url = "http://" + url;
     }
@@ -98,13 +196,13 @@ function App() {
       });
   }
 
-  //work on getting other news sources to work
-  function handleGetNews(query, source) {
-    fetch(`http://localhost:5555/get-news?q=${query}&sources=${source}`)
+  function handleGetNews(sources) {
+    fetch(`http://localhost:5555/get-news?sources=${sources}`)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         setNews(data.articles);
+        console.log(data.articles);
 
         alanInstance.current.playText(`Okay, these are the news headlines`);
         data.articles.forEach((article) => {
@@ -191,7 +289,9 @@ function App() {
         <img src={alanTuring} alt="Alan Turinng" />
       </div>
       <div className="content">{/* <h1>Floating CSS animation</h1> */}</div>
-      <div className="star"></div>
+      <div id="stars"></div>
+      <div id="stars2"></div>
+      <div id="stars3"></div>
     </div>
   );
 }
