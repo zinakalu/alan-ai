@@ -33,6 +33,7 @@ function App() {
   function handleCommand(commandData) {
     console.log(" Received commandData", commandData);
 
+    saveUserInteraction(commandData.command, commandData.aiResponse);
     switch (commandData.command) {
       case "getLocation":
         handleGetLocation();
@@ -275,6 +276,24 @@ function App() {
         setSong(data.video_id);
         console.log(data.video_id);
         window.open(`https://youtube.com/watch?v=${data.video_id}`, "_blank");
+      });
+  }
+  function saveUserInteraction(userInput, aiResponse) {
+    fetch("http://localhost:8080/interactions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userInputSpeech: userInput,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Saved interaction:", data);
+      })
+      .catch((error) => {
+        console.error("Error saving interaction:", error);
       });
   }
 
