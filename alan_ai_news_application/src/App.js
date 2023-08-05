@@ -16,6 +16,7 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [song, setSong] = useState("");
   const [country, setCountry] = useState([]);
+  const [translatedText, setTranslatedText] = useState("");
   const alanInstance = useRef(null);
 
   const toggleTheme = () => {
@@ -30,7 +31,7 @@ function App() {
   }, []);
 
   function handleCommand(commandData) {
-    console.log("commandData", commandData);
+    console.log(" Received commandData", commandData);
 
     switch (commandData.command) {
       case "getLocation":
@@ -65,18 +66,55 @@ function App() {
         handleTime(commandData.time);
         break;
 
+      case "getTranslation":
+        handleTranslation(commandData.text, commandData.target);
+        console.log("❤️😭", commandData.text, commandData.target);
+        break;
+
       default:
         console.log("Default");
     }
+  }
+
+  function handleTranslation(text, target) {
+    // let targetLanguage;
+    console.log("Translating text:", text, "to language:", target);
+    if (target === "French") {
+      target = "fr";
+    } else if (target === "Spanish") {
+      target = "es";
+    } else if (target === "Igbo") {
+      target = "ig";
+    } else {
+      console.log(`Unsupported : ${target}`);
+      return;
+    }
+    console.log(target);
+    fetch("http://localhost:5555/translate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: text, target: target }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("🥰", data);
+        setTranslatedText(data.translatedText);
+        console.log("🥰", data.translatedText);
+      })
+      .catch((error) => console.error("Error:", error));
   }
 
   function handleTime() {
     const now = new Date();
 
     let hours = now.getHours();
+    console.log("😭workkkk", hours);
     let minutes = now.getMinutes();
 
     const formattedTime = formatTime(`${hours}:${minutes}`);
+    console.log("💕💞", formattedTime);
     alanInstance.current.playText(`The time is ${formattedTime}`);
   }
 
@@ -84,6 +122,7 @@ function App() {
     let [hours, minutes] = time.split(":");
 
     hours = parseInt(hours);
+    console.log("INSIDE FORMATTIME", hours);
     minutes = parseInt(minutes);
 
     let period = "AM";
@@ -96,74 +135,10 @@ function App() {
     } else if (hours === 0) {
       hours = 12;
     }
-    hours = hours < 10 ? `O${hours}` : hours;
-    minutes = minutes < 10 ? `O${minutes}` : minutes;
-
-    const numberWords = [
-      "zero",
-      "one",
-      "two",
-      "three",
-      "four",
-      "five",
-      "six",
-      "seven",
-      "eight",
-      "nine",
-      "ten",
-      "eleven",
-      "twelve",
-      "thirteen",
-      "fourteen",
-      "fifteen",
-      "sixteen",
-      "seventeen",
-      "eighteen",
-      "nineteen",
-      "twenty",
-      "twenty-one",
-      "twenty-two",
-      "twenty-three",
-      "twenty-four",
-      "twenty-five",
-      "twenty-six",
-      "twenty-seven",
-      "twenty-eight",
-      "twenty-nine",
-      "thirty",
-      "thirty-one",
-      "thirty-two",
-      "thirty-three",
-      "thirty-four",
-      "thirty-five",
-      "thirty-six",
-      "thirty-seven",
-      "thirty-eight",
-      "thirty-nine",
-      "forty",
-      "forty-one",
-      "forty-two",
-      "forty-three",
-      "forty-four",
-      "forty-five",
-      "forty-six",
-      "forty-seven",
-      "forty-eight",
-      "forty-nine",
-      "fifty",
-      "fifty-one",
-      "fifty-two",
-      "fifty-three",
-      "fifty-four",
-      "fifty-five",
-      "fifty-six",
-      "fifty-seven",
-      "fifty-eight",
-      "fifty-nine",
-    ];
-    hours = numberWords[hours];
-    minutes = numberWords[minutes];
-    console.log(hours);
+    hours = hours < 10 ? `0${hours}` : hours;
+    console.log("line 103", hours);
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+    console.log("😇", hours);
     return `${hours} ${minutes} ${period}`;
   }
 
@@ -283,9 +258,6 @@ function App() {
         alanInstance.current.playText(
           `finding the weather for you. ${data.weather_info}`
         );
-        // alanInstance.current.playText({
-        //   command: `${data.weather_info}`,
-        // });
       });
   }
 
@@ -303,9 +275,6 @@ function App() {
         setSong(data.video_id);
         console.log(data.video_id);
         window.open(`https://youtube.com/watch?v=${data.video_id}`, "_blank");
-        // alanInstance.current.playText({
-        //   command: `${data.video_id}`,
-        // });
       });
   }
 
