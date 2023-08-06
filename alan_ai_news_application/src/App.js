@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import alanBtn from "@alan-ai/alan-sdk-web";
 import alanTuring from "./imageFolder/alan-turing-rapp-art.jpg";
 import "./index.css";
@@ -8,6 +9,8 @@ const alanKey =
   "2c0ab51777316753ef8cf83bde8e67772e956eca572e1d8b807a3e2338fdd0dc/stage";
 
 function App() {
+  const location1 = useLocation();
+  const username = location1.state?.username || "User";
   const [theme, setTheme] = useState("theme2");
   const [location, setLocation] = useState(null);
   const [news, setNews] = useState([]);
@@ -78,7 +81,6 @@ function App() {
   }
 
   function handleTranslation(text, target) {
-    // let targetLanguage;
     console.log("Translating text:", text, "to language:", target);
     if (target === "French") {
       target = "fr";
@@ -226,7 +228,7 @@ function App() {
         console.log(data);
         setYelpBusiness(data.businesses);
         console.log(data.businesses);
-        alanInstance.current.playText(`The restaurants are`);
+        alanInstance.current.playText(`Okay, here they are`);
         data.businesses.forEach((biz) => {
           console.log(biz.name);
           alanInstance.current.playText(biz.name);
@@ -257,7 +259,7 @@ function App() {
         console.log(data.weather_info);
 
         alanInstance.current.playText(
-          `finding the weather for you. ${data.weather_info}`
+          `Let me get that for you. It's ${data.weather_info}`
         );
       });
   }
@@ -278,6 +280,7 @@ function App() {
         window.open(`https://youtube.com/watch?v=${data.video_id}`, "_blank");
       });
   }
+
   function saveUserInteraction(userInput, aiResponse) {
     fetch("http://localhost:8080/interactions", {
       method: "POST",
@@ -299,7 +302,7 @@ function App() {
 
   return (
     <div className={`App ${theme}`}>
-      <button onClick={toggleTheme}>Hello User!</button>
+      <button onClick={toggleTheme}>Hello {username}!</button>
       <div className="avatar">
         <img src={alanTuring} alt="Alan Turing" />
       </div>
