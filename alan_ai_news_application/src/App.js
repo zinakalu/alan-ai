@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import alanBtn from "@alan-ai/alan-sdk-web";
 import alanTuring from "./imageFolder/alan-turing-rapp-art.jpg";
 import "./index.css";
@@ -21,6 +21,7 @@ function App() {
   const [country, setCountry] = useState([]);
   const [translatedText, setTranslatedText] = useState("");
   const alanInstance = useRef(null);
+  const navigate = useNavigate();
 
   const toggleTheme = () => {
     setTheme(theme === "theme1" ? "theme2" : "theme1");
@@ -107,6 +108,10 @@ function App() {
         console.log("🥰", data.translatedText);
       })
       .catch((error) => console.error("Error:", error));
+  }
+
+  function handleLogout() {
+    navigate("/login");
   }
 
   function handleTime() {
@@ -310,6 +315,9 @@ function App() {
       <div id="stars"></div>
       <div id="stars2"></div>
       <div id="stars3"></div>
+      <button className="logout" onClick={handleLogout}>
+        Log Out
+      </button>
     </div>
   );
 }
