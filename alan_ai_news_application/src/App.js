@@ -11,6 +11,8 @@ const alanKey =
 function App() {
   const location1 = useLocation();
   const username = location1.state?.username || "User";
+  const email = location1.state?.email;
+  const [questionsList, setQuestionsList] = useState([]);
   const [theme, setTheme] = useState("theme2");
   const [location, setLocation] = useState(null);
   const [news, setNews] = useState([]);
@@ -36,8 +38,11 @@ function App() {
 
   function handleCommand(commandData) {
     console.log(" Received commandData", commandData);
+    setQuestionsList((prevQuestions) => [
+      ...prevQuestions,
+      commandData.command,
+    ]);
 
-    saveUserInteraction(commandData.command, commandData.aiResponse);
     switch (commandData.command) {
       case "getLocation":
         handleGetLocation();
@@ -51,9 +56,9 @@ function App() {
         handleGetYelpBusiness(commandData.searchType, commandData.location);
         break;
 
-      case "getGeneralQuestions":
-        handleGetGeneralQuestions(commandData.question);
-        break;
+      // case "getGeneralQuestions":
+      //   handleGetGeneralQuestions(commandData.question);
+      //   break;
 
       case "getWeather":
         handleWeather(commandData.city);
@@ -74,6 +79,14 @@ function App() {
       case "getTranslation":
         handleTranslation(commandData.text, commandData.target);
         console.log("❤️😭", commandData.text, commandData.target);
+        break;
+
+      case "sendQuestions":
+        if (commandData.email === "default") {
+          sendQuestionsByEmail(email, questionsList);
+        } else {
+          sendQuestionsByEmail(commandData.email, questionsList);
+        }
         break;
 
       default:
@@ -112,6 +125,31 @@ function App() {
 
   function handleLogout() {
     navigate("/login");
+  }
+
+  function sendQuestionsByEmail(email, questionsList) {
+    fetch("http://localhost:5555/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        questions: questionsList,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message) {
+          alert(data.message);
+        } else if (data.error) {
+          alert(data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    console.log("❤️😓", email, questionsList);
   }
 
   function handleTime() {
@@ -241,18 +279,18 @@ function App() {
       });
   }
 
-  function handleGetGeneralQuestions(question) {
-    fetch(`http://localhost:5555/ask-gpt3?question=${question}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setGeneralQuestions(data.response);
+  // function handleGetGeneralQuestions(question) {
+  //   fetch(`http://localhost:5555/ask-gpt3?question=${question}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //       setGeneralQuestions(data.response);
 
-        alanInstance.current.playText({
-          command: `${data}`,
-        });
-      });
-  }
+  //       alanInstance.current.playText({
+  //         command: `${data}`,
+  //       });
+  //     });
+  // }
 
   function handleWeather(city) {
     console.log(`Are you being invoked?`);
@@ -286,32 +324,15 @@ function App() {
       });
   }
 
-  function saveUserInteraction(userInput, aiResponse) {
-    fetch("http://localhost:8080/interactions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userInputSpeech: userInput,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Saved interaction:", data);
-      })
-      .catch((error) => {
-        console.error("Error saving interaction:", error);
-      });
-  }
-
   return (
     <div className={`App ${theme}`}>
-      <button onClick={toggleTheme}>Hello {username}!</button>
+      <button className="name-btn" onClick={toggleTheme}>
+        Hello {username}!
+      </button>
       <div className="avatar">
         <img src={alanTuring} alt="Alan Turing" />
       </div>
-      <div className="content">{/* <h1>Floating CSS animation</h1> */}</div>
+      <div className="content"></div>
       <div id="stars"></div>
       <div id="stars2"></div>
       <div id="stars3"></div>
