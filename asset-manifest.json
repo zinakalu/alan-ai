@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.871472ac.css",
+    "main.js": "/static/js/main.1b3c331b.js",
+    "static/media/alan-turing-rapp-art.jpg": "/static/media/alan-turing-rapp-art.d622de8487dae9e2c048.jpg",
+    "index.html": "/index.html",
+    "main.871472ac.css.map": "/static/css/main.871472ac.css.map",
+    "main.1b3c331b.js.map": "/static/js/main.1b3c331b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.871472ac.css",
+    "static/js/main.1b3c331b.js"
+  ]
+}
