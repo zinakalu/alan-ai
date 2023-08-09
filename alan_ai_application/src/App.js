@@ -15,6 +15,7 @@ function App() {
   //   email: location1.state?.email,
   // });
   const username = location1.state?.username || "User";
+  const email = location1.state?.email;
   const [questionsList, setQuestionsList] = useState([]);
   const [theme, setTheme] = useState("theme2");
   const [location, setLocation] = useState(null);
@@ -24,7 +25,7 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [song, setSong] = useState("");
   const [country, setCountry] = useState([]);
-  const [translatedText, setTranslatedText] = useState("");
+  // const [translatedText, setTranslatedText] = useState("");
   const alanInstance = useRef(null);
   const navigate = useNavigate();
 
@@ -41,10 +42,10 @@ function App() {
 
   function handleCommand(commandData) {
     console.log(" Received commandData", commandData);
-    setQuestionsList((prevQuestions) => [
-      ...prevQuestions,
-      commandData.command,
-    ]);
+    // setQuestionsList((prevQuestions) => [
+    //   ...prevQuestions,
+    //   commandData.command,
+    // ]);
     console.log(commandData.command);
 
     // saveQuestionToBackend(commandData.command);
@@ -62,9 +63,9 @@ function App() {
         handleGetYelpBusiness(commandData.searchType, commandData.location);
         break;
 
-      // case "getGeneralQuestions":
-      //   handleGetGeneralQuestions(commandData.question);
-      //   break;
+      case "getGeneralQuestions":
+        handleGetGeneralQuestions(commandData.question);
+        break;
 
       case "getWeather":
         handleWeather(commandData.city);
@@ -82,122 +83,50 @@ function App() {
         handleTime(commandData.time);
         break;
 
-      case "getTranslation":
-        handleTranslation(commandData.text, commandData.target);
-        break;
-
-      // case "sendQuestions":
-      //   console.log(questionsList, "??????");
-      //   if (commandData.email === "default") {
-      //     sendQuestionsByEmail(userDetails.email, questionsList);
-      //   } else {
-      //     sendQuestionsByEmail(commandData.email, questionsList);
-      //   }
-      //   console.log(questionsList);
+      // case "getTranslation":
+      //   handleTranslation(commandData.text, commandData.target);
       //   break;
+
+      case "sendQuestions":
+        if (commandData.email === "default") {
+          sendQuestionsByEmail(email);
+        } else {
+          sendQuestionsByEmail(email);
+        }
+        console.log(questionsList);
+        break;
 
       default:
         console.log("Default");
     }
   }
 
-  // function saveQuestionToBackend(question) {
-  //   console.log("😭🤞🏾", question);
-  //   fetch("http://localhost:5555/save-question", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       question: question,
-  //       username: userDetails.username,
-  //       email: userDetails.email,
-  //     }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data.message);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error saving question:", error);
-  //     });
-  // }
-
-  function handleTranslation(text, target) {
-    console.log("Translating text:", text, "to language:", target);
-    if (target === "French") {
-      target = "fr";
-    } else if (target === "Spanish") {
-      target = "es";
-    } else if (target === "Igbo") {
-      target = "ig";
-    } else {
-      console.log(`Unsupported : ${target}`);
-      return;
-    }
-    console.log(target);
-    fetch("http://localhost:5555/translate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text: text, target: target }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("🥰", data);
-        setTranslatedText(data.translatedText);
-        console.log("🥰", data.translatedText);
-      })
-      .catch((error) => console.error("Error:", error));
-  }
-
   function handleLogout() {
     navigate("/login");
   }
 
-  // function fetchUserQuestions() {
-  //   const userEmail = userDetails.email;
-
-  //   fetch(`http://localhost:5555/get-questions?email=${userEmail}`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.questions) {
-  //         console.log("Questions asked by John:", data.questions);
-  //       } else if (data.error) {
-  //         console.error(data.error);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching questions:", error);
-  //     });
-  // }
-
-  // function sendQuestionsByEmail(email, questionsList) {
-  //   console.log("LJAHSRGJQGS");
-  //   fetch("http://localhost:5555/send-email", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       email: email,
-  //       questions: questionsList,
-  //     }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (data.message) {
-  //         alert(data.message);
-  //       } else if (data.error) {
-  //         alert(data.error);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error:", error);
-  //     });
-  //   console.log("❤️😓", email, questionsList);
-  // }
+  function sendQuestionsByEmail(email) {
+    fetch("http://localhost:5555/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message) {
+          alert(data.message);
+        } else if (data.error) {
+          alert(data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
 
   function handleTime() {
     const now = new Date();
@@ -265,11 +194,10 @@ function App() {
     fetch(`http://localhost:5555/get-news?sources=${sources}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("🤷🏾‍♀️🤷🏾‍♀️", data);
         setNews(data.articles);
         console.log(data.articles);
         if (Array.isArray(data.articles)) {
-          alanInstance.current.playText(`Okay, these are the news headlines`);
+          alanInstance.current.playText(`Okay, I found these on the web`);
           data.articles.forEach((article) => {
             console.log(article.name);
             alanInstance.current.playText(article.title);
@@ -285,9 +213,8 @@ function App() {
               } is ${data.result.currencies.join(",")}`;
               break;
             case "language":
-              responseText = `The language of ${
-                data.result.name
-              } is ${data.result.languages.join(",")}`;
+              responseText = `They speak ${data.result.languages.join(",")} in 
+              ${data.result.name}`;
               break;
             case "population":
               responseText = `The population of ${data.result.name} is ${data.result.population}`;
@@ -314,7 +241,7 @@ function App() {
         console.log(data);
         setYelpBusiness(data.businesses);
         console.log(data.businesses);
-        alanInstance.current.playText(`Okay, here they are`);
+        alanInstance.current.playText(`Alright, here are some options`);
         data.businesses.forEach((biz) => {
           console.log(biz.name);
           alanInstance.current.playText(biz.name);
@@ -322,18 +249,16 @@ function App() {
       });
   }
 
-  // function handleGetGeneralQuestions(question) {
-  //   fetch(`http://localhost:5555/ask-gpt3?question=${question}`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       setGeneralQuestions(data.response);
-
-  //       alanInstance.current.playText({
-  //         command: `${data}`,
-  //       });
-  //     });
-  // }
+  function handleGetGeneralQuestions(question) {
+    fetch(`http://localhost:5555/ask-gpt3?question=${question}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("PROCESSED DATA", data);
+        setGeneralQuestions(data.response);
+        console.log("🤪 BACKEND RESPONSE", data.response);
+        alanInstance.current.playText(`${data.response}`);
+      });
+  }
 
   function handleWeather(city) {
     console.log(`Are you being invoked?`);
@@ -382,7 +307,6 @@ function App() {
       <button className="logout" onClick={handleLogout}>
         Log Out
       </button>
-      {/* <button onClick={fetchUserQuestions}>Fetch My Questions</button> */}
     </div>
   );
 }

@@ -21,17 +21,23 @@
 
   .theme2 button.logout{
     position: absolute;
-    top: 550px;
-    left: 43px;
-    width: 70px; 
-    height: 20px;
-  }
-
-  .theme2 .name-btn{
-    position: relative;
-    top: 17px;
-  }
+    top: 614px;
+    left: 49px;
+    background-color: rgb(107, 0, 128); 
+    color: white; 
+    border: none; 
+	border-radius: 2px;
+    padding: 18px 15px 18px 15px; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+    z-index: 9999;
+}
   
+  
+.logout:hover {
+    background-color: rgb(106, 0, 255); 
+}
+
   
 
   .theme2 button{
@@ -111,7 +117,28 @@
     }
   }
   
-    
+  .name-btn {
+    font-size: 20px; 
+    background: linear-gradient(to right, #36d1dc, #5b86e5);  /* Gradient effect */
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .name-btn:hover {
+    background: linear-gradient(to left, #36d1dc, #5b86e5);  /* Gradient effect when hovered */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+  
 
 
   

@@ -31,10 +31,6 @@
   outline: none;
 }
 
-/* .checkboxInput {
-  margin-right: 10px;
-} */
-
 .checkboxLabel {
   display: inline-block;
 }
@@ -60,4 +56,12 @@
   background-color: #2d00b3;
 }
 
-  
+.buttonsContainer {
+  display: flex;
+  justify-content: space-between; /* or space-around, depending on your preference */
+  width: 100%; /* adjust as needed */
+}
+button {
+  margin: 0 5px; /* Adjust this value to bring the buttons closer or farther apart */
+}
+
