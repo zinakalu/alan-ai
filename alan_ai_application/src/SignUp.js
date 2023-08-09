@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styles from "./SignUp.module.css";
 
 function SignUp() {
   const [username, setUsername] = useState("");
@@ -32,34 +33,45 @@ function SignUp() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Sign Up</h2>
-      <input
-        type="text"
-        placeholder="Enter Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="Enter Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type={showPassword ? "text" : "password"}
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <input
-        type="checkbox"
-        checked={showPassword}
-        onChange={() => setShowPassword(!showPassword)}
-      />{" "}
-      Show Password
-      <button type="submit">Sign Up</button>
-    </form>
+    <div className={styles.body}>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <h2 className={styles.header}>Sign Up</h2>
+        <input
+          type="text"
+          placeholder="Enter Username"
+          className={styles.textInput}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Enter Email"
+          className={styles.emailInput}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          className={styles.passwordInput}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <label className={styles.checkboxLabel}>
+          <input
+            type="checkbox"
+            className={styles.checkboxInput}
+            checked={showPassword}
+            onChange={() => setShowPassword(!showPassword)}
+          />
+          Show Password
+        </label>
+
+        <button type="submit" className={styles.button}>
+          Sign Up
+        </button>
+      </form>
+    </div>
   );
 }
 

@@ -10,8 +10,11 @@ const alanKey =
 
 function App() {
   const location1 = useLocation();
+  // const [userDetails, setUserDetails] = useState({
+  //   username: location1.state?.username || "User",
+  //   email: location1.state?.email,
+  // });
   const username = location1.state?.username || "User";
-  const email = location1.state?.email;
   const [questionsList, setQuestionsList] = useState([]);
   const [theme, setTheme] = useState("theme2");
   const [location, setLocation] = useState(null);
@@ -42,6 +45,9 @@ function App() {
       ...prevQuestions,
       commandData.command,
     ]);
+    console.log(commandData.command);
+
+    // saveQuestionToBackend(commandData.command);
 
     switch (commandData.command) {
       case "getLocation":
@@ -78,21 +84,44 @@ function App() {
 
       case "getTranslation":
         handleTranslation(commandData.text, commandData.target);
-        console.log("❤️😭", commandData.text, commandData.target);
         break;
 
-      case "sendQuestions":
-        if (commandData.email === "default") {
-          sendQuestionsByEmail(email, questionsList);
-        } else {
-          sendQuestionsByEmail(commandData.email, questionsList);
-        }
-        break;
+      // case "sendQuestions":
+      //   console.log(questionsList, "??????");
+      //   if (commandData.email === "default") {
+      //     sendQuestionsByEmail(userDetails.email, questionsList);
+      //   } else {
+      //     sendQuestionsByEmail(commandData.email, questionsList);
+      //   }
+      //   console.log(questionsList);
+      //   break;
 
       default:
         console.log("Default");
     }
   }
+
+  // function saveQuestionToBackend(question) {
+  //   console.log("😭🤞🏾", question);
+  //   fetch("http://localhost:5555/save-question", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       question: question,
+  //       username: userDetails.username,
+  //       email: userDetails.email,
+  //     }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data.message);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error saving question:", error);
+  //     });
+  // }
 
   function handleTranslation(text, target) {
     console.log("Translating text:", text, "to language:", target);
@@ -127,40 +156,56 @@ function App() {
     navigate("/login");
   }
 
-  function sendQuestionsByEmail(email, questionsList) {
-    fetch("http://localhost:5555/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        questions: questionsList,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message) {
-          alert(data.message);
-        } else if (data.error) {
-          alert(data.error);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    console.log("❤️😓", email, questionsList);
-  }
+  // function fetchUserQuestions() {
+  //   const userEmail = userDetails.email;
+
+  //   fetch(`http://localhost:5555/get-questions?email=${userEmail}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data.questions) {
+  //         console.log("Questions asked by John:", data.questions);
+  //       } else if (data.error) {
+  //         console.error(data.error);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching questions:", error);
+  //     });
+  // }
+
+  // function sendQuestionsByEmail(email, questionsList) {
+  //   console.log("LJAHSRGJQGS");
+  //   fetch("http://localhost:5555/send-email", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       email: email,
+  //       questions: questionsList,
+  //     }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.message) {
+  //         alert(data.message);
+  //       } else if (data.error) {
+  //         alert(data.error);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //     });
+  //   console.log("❤️😓", email, questionsList);
+  // }
 
   function handleTime() {
     const now = new Date();
 
     let hours = now.getHours();
-    console.log("😭workkkk", hours);
     let minutes = now.getMinutes();
 
     const formattedTime = formatTime(`${hours}:${minutes}`);
-    console.log("💕💞", formattedTime);
     alanInstance.current.playText(`The time is ${formattedTime}`);
   }
 
@@ -168,7 +213,6 @@ function App() {
     let [hours, minutes] = time.split(":");
 
     hours = parseInt(hours);
-    console.log("INSIDE FORMATTIME", hours);
     minutes = parseInt(minutes);
 
     let period = "AM";
@@ -184,7 +228,6 @@ function App() {
     hours = hours < 10 ? `0${hours}` : hours;
     console.log("line 103", hours);
     minutes = minutes < 10 ? `0${minutes}` : minutes;
-    console.log("😇", hours);
     return `${hours} ${minutes} ${period}`;
   }
 
@@ -339,6 +382,7 @@ function App() {
       <button className="logout" onClick={handleLogout}>
         Log Out
       </button>
+      {/* <button onClick={fetchUserQuestions}>Fetch My Questions</button> */}
     </div>
   );
 }

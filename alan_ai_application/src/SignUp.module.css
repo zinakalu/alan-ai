@@ -1,0 +1,63 @@
+/* .body {
+  background-color: white;
+  height: 100vh;
+} */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  max-width: 400px;
+  margin: 50px auto;
+  /* border: 1px solid #eee; */
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.textInput,
+.emailInput,
+.passwordInput {
+  width: 100%;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+}
+
+/* .checkboxInput {
+  margin-right: 10px;
+} */
+
+.checkboxLabel {
+  display: inline-block;
+}
+
+.checkboxInput {
+  display: inline;
+  margin-right: 10px;
+}
+
+
+.button {
+  padding: 10px 20px;
+  margin-top: 10px; 
+  background-color: #4d1edc;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #2d00b3;
+}
+
+  
